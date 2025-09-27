@@ -348,13 +348,13 @@ input:focus{outline:2px solid rgba(191,162,67,.35);outline-offset:2px}
           <form id="loginForm" class="grid" novalidate>
             <div class="field">
               <label for="email">Work Email Address</label>
-              <input id="email" type="email" autocomplete="username" required placeholder="you@company.com" value="demo@valhalla.com"/>
+              <input id="email" type="email" autocomplete="username" required placeholder="you@company.com"/>
               <div class="helper">Use your company email address</div>
             </div>
             <div class="field">
               <label for="password">Password</label>
               <div class="row" style="width:100%">
-                <input id="password" type="password" autocomplete="current-password" required style="flex:1" placeholder="Enter your password" value="ValhallaDemo2024!"/>
+                <input id="password" type="password" autocomplete="current-password" required style="flex:1" placeholder="Enter your password"/>
                 <button type="button" id="togglePw" class="btn gold-surface" style="height:44px;border-radius:12px">Show</button>
               </div>
               <div class="helper">Minimum 8 characters required</div>
@@ -501,7 +501,7 @@ class ValhallaAuth {
     document.getElementById('togglePw').addEventListener('click', () => {
       const pw = document.getElementById('password');
       pw.type = pw.type === 'password' ? 'text' : 'password';
-      this.textContent = pw.type === 'password' ? 'Show' : 'Hide';
+      document.getElementById('togglePw').textContent = pw.type === 'password' ? 'Show' : 'Hide';
     });
     
     // Form submission
@@ -544,11 +544,12 @@ class ValhallaAuth {
     
     try {
       if (this.config.useDemoAuth) {
-        // Demo mode
+        // Demo mode - for testing only
+        // Remove these hardcoded credentials in production!
         if (email === 'demo@valhalla.com' && password === 'ValhallaDemo2024!') {
           this.showMFAForm();
         } else {
-          document.getElementById('err').textContent = 'Invalid credentials. Use demo@valhalla.com / ValhallaDemo2024!';
+          document.getElementById('err').textContent = 'Invalid credentials';
         }
       } else {
         // Production API call
@@ -599,7 +600,7 @@ class ValhallaAuth {
       window.location.href = authUrl;
     } else {
       // Development mode message
-      alert(`${provider} authentication will be enabled in ${this.config.env === 'development' ? 'production' : 'this environment'}. For testing, use the demo credentials.`);
+      alert(`${provider} authentication will be enabled in production. For testing, use the demo credentials.`);
     }
   }
   
@@ -675,7 +676,7 @@ class ValhallaAuth {
     const code = document.getElementById('mfaCode').value;
     
     if (this.config.useDemoAuth) {
-      // Demo mode
+      // Demo mode - for testing only
       if (code === '123456') {
         this.completeLogin({ 
           email: 'demo@valhalla.com',
@@ -683,7 +684,7 @@ class ValhallaAuth {
           expiresIn: 3600 
         });
       } else {
-        document.getElementById('mfaErr').textContent = 'Invalid code. Use: 123456';
+        document.getElementById('mfaErr').textContent = 'Invalid code';
       }
     } else {
       // Production API call
@@ -762,6 +763,17 @@ class ValhallaAuth {
 document.addEventListener('DOMContentLoaded', () => {
   new ValhallaAuth();
 });
+
+// ============================================
+// DEMO INSTRUCTIONS (REMOVE IN PRODUCTION)
+// ============================================
+console.log('%c⚠️ DEMO MODE ACTIVE', 'color: orange; font-size: 20px; font-weight: bold');
+console.log('%cDemo Credentials:', 'color: yellow; font-size: 14px');
+console.log('%cEmail: demo@valhalla.com', 'color: white; font-size: 12px');
+console.log('%cPassword: ValhallaDemo2024!', 'color: white; font-size: 12px');
+console.log('%cMFA Code: 123456', 'color: white; font-size: 12px');
+console.log('%c' + '='.repeat(40), 'color: gray');
+console.log('%c⚠️ Remove these credentials before production deployment!', 'color: red; font-size: 12px');
 
 // ============================================
 // AZURE DEPLOYMENT CHECKLIST
