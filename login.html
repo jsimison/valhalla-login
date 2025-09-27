@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Valhalla Labor Compliance – Enterprise Login</title>
+<meta name="description" content="Secure enterprise login for Valhalla Labor Compliance certified payroll reporting platform"/>
+<style>
+:root{
+  --gold-light:#f5e97e; --gold-mid:#bfa243; --gold-dark:#7a6519;
+  --bg:#1c1c1e; --text:#efe6c3; --panel:#111213; --panel-text:#efe6c3;
+  --border:#262626; --muted:#d2c9a9; --shadow:0 14px 34px rgba(0,0,0,.35); 
+  --danger:#c0392b; --success:#2ecc71; --info:#3498db; --warning:#f39c12;
+}
+html[data-theme="light"]{
+  --bg:#f7f0dc; --text:#222; --panel:#f2ead0; --panel-text:#111; 
+  --border:#e3d8b9; --muted:#5c5c5c;
+}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,Segoe UI,Roboto,Arial,sans-serif}
+a{color:inherit;text-decoration:none}
+.btn{height:36px;padding:0 16px;border-radius:14px;border:0;cursor:pointer;font-weight:700}
+.goldtext,.logo-gold{
+  background:linear-gradient(135deg,var(--gold-mid),var(--gold-light) 42%,var(--gold-dark) 74%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;font-weight:900
+}
+.gold-link{
+  background:linear-gradient(135deg,var(--gold-mid),var(--gold-light) 42%,var(--gold-dark) 74%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;font-weight:800
+}
+.gold-surface{
+  background:linear-gradient(135deg,var(--gold-mid) 0%,var(--gold-light) 28%,var(--gold-mid) 52%,var(--gold-dark) 74%,var(--gold-mid) 100%);
+  background-size:220% 220%; background-position:0% 50%;
+  color:#111;border:0;border-radius:14px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.22),inset 0 -1px 0 rgba(0,0,0,.28),0 6px 18px rgba(0,0,0,.35);
+  transition:background-position 1s ease,transform .12s ease,box-shadow .2s ease
+}
+.gold-surface:hover{background-position:100% 50%;transform:translateY(-1px)}
+.gold-surface:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+.btn-outline{
+  background:transparent;border:1px solid var(--muted); color:var(--panel-text);
+  height:40px; padding:0 14px; border-radius:12px;
+}
+.btn-outline:hover{border-color:var(--gold-mid); box-shadow:0 0 0 2px rgba(191,162,67,.20) inset;}
+.app-header{
+  height:76px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;position:sticky;top:0;z-index:20;background:#111;border-bottom:1px solid var(--border)
+}
+html[data-theme="light"] .app-header{background:var(--bg)}
+.brand{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;align-items:center;column-gap:10px}
+.brand .coin{grid-row:1 / span 2}
+.brand .name{align-self:end;font-size:16px;letter-spacing:.06em;text-transform:uppercase;line-height:1}
+.brand .tag{align-self:start;line-height:1.15;font-size:10px;font-weight:400;letter-spacing:.12em;color:var(--muted);margin-top:2px}
+.header-actions{display:flex;gap:10px;align-items:center}
+.security-badge{display:inline-flex;align-items:center;gap:0.25rem;padding:0.25rem 0.5rem;
+  background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.3);border-radius:6px;
+  font-size:0.75rem;color:var(--success);font-weight:500;}
+.wrap{display:flex;min-height:calc(100vh - 76px);}
+main.content{flex:1;padding:32px;display:grid;place-items:center}
+.form-card{width:min(980px,96vw);background:var(--panel);border:1px solid var(--border);color:var(--panel-text);
+  border-radius:18px;box-shadow:var(--shadow);padding:22px;}
+.login-grid{display:grid;grid-template-columns:470px 1fr;gap:22px;align-items:start}
+@media (max-width:980px){.login-grid{grid-template-columns:1fr;gap:12px}}
+.brand-illustration{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:6px}
+.brand-legend{margin-top:12px;text-align:center}
+.brand-legend .title{font-size:22px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px}
+.brand-legend .tagline{font-size:12px;letter-spacing:.12em;text-transform:uppercase;opacity:.95}
+.emblem{transition:filter .25s ease, transform .15s ease}
+.emblem:hover{filter:brightness(1.08) drop-shadow(0 12px 28px rgba(0,0,0,.45)); transform:translateY(-1px)}
+.h-row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+h1{margin:0 0 8px 0;font-size:22px;letter-spacing:.02em}
+.preamble{opacity:.9;margin:0 0 14px 0}
+hr.sep{height:1px;border:0;background:var(--border);margin:16px 0}
+.grid{display:grid;grid-template-columns:1fr;gap:12px}
+.field{display:flex;flex-direction:column;gap:6px}
+label{font-weight:700;letter-spacing:.02em}
+input[type="email"],input[type="password"],input[type="text"],input[type="tel"]{
+  height:44px;border-radius:12px;border:1px solid var(--border);background:transparent;color:inherit;padding:0 12px;
+}
+input:focus{outline:2px solid rgba(191,162,67,.35);outline-offset:2px}
+.helper{font-size:12px;opacity:.85}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.actions{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+.linkrow{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
+.err{color:var(--danger);font-weight:700;margin-top:8px;min-height:1.25em}
+.success-msg{color:var(--success);font-weight:700;margin-top:8px;display:none}
+.sso{display:grid;grid-template-columns:1fr;gap:10px;margin-top:4px}
+.sso button{height:44px;border-radius:12px;border:1px solid var(--border);background:transparent;color:inherit;
+  display:flex;align-items:center;gap:10px;padding:0 12px;cursor:pointer;transition:all 0.2s}
+.sso button:hover{border-color:var(--gold-mid);background:rgba(191,162,67,0.05)}
+.sso svg{width:20px;height:20px}
+.mfa{display:none;flex-direction:column;margin-top:10px}
+.mfa.active{display:flex;animation:slideIn 0.3s ease-out}
+@keyframes slideIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.mfa .code{letter-spacing:0.3em;text-transform:uppercase;text-align:center;font-size:1.25rem;font-family:'Monaco',monospace}
+.mfa .timer{font-size:12px;opacity:.85;text-align:center;margin-top:8px}
+.version-badge{display:inline-flex;align-items:center;gap:0.5rem;padding:0.25rem 0.75rem;
+  background:rgba(191,162,67,0.1);border:1px solid rgba(191,162,67,0.2);border-radius:20px;
+  font-size:0.75rem;font-weight:500;color:var(--gold-mid);}
+
+.loading-spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(0,0,0,0.1);
+  border-left-color:#111;border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <a class="brand" href="#" aria-label="Valhalla Labor Compliance">
+    <svg class="coin" width="46" height="46" viewBox="0 0 64 64" aria-hidden="true">
+      <defs><radialGradient id="coinGrad" cx="50%" cy="38%" r="64%">
+        <stop offset="0%" stop-color="#f5e97e"/><stop offset="38%" stop-color="#bfa243"/>
+        <stop offset="74%" stop-color="#7a6519"/><stop offset="100%" stop-color="#bfa243"/>
+      </radialGradient></defs>
+      <circle cx="32" cy="32" r="30" fill="url(#coinGrad)"/>
+      <circle cx="32" cy="32" r="29" fill="none" stroke="#000" stroke-opacity=".22" stroke-width="2"/>
+      <g fill="#000" fill-opacity=".28"><rect x="22" y="20" width="20" height="10" rx="2"/><rect x="30" y="30" width="4" height="18" rx="2"/><rect x="28" y="48" width="8" height="6" rx="2"/></g>
+    </svg>
+    <span class="name goldtext">VALHALLA LABOR COMPLIANCE</span>
+    <span class="tag">ENTERPRISE CERTIFIED PAYROLL REPORTING</span>
+  </a>
+  <div class="header-actions">
+    <span class="security-badge">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+      Secure Login
+    </span>
+    <button id="mode" class="btn gold-surface" aria-pressed="false" title="Toggle Light/Dark">🌓</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <main class="content">
+    <section class="form-card" aria-labelledby="title">
+      <div class="login-grid">
+        <!-- LEFT: Nordic Shield Emblem -->
+        <aside class="brand-illustration">
+          <svg class="emblem" viewBox="0 0 600 640" role="img" aria-label="Valhalla emblem" style="max-width:100%;height:auto">
+            <defs>
+              <!-- Liquid gold base -->
+              <radialGradient id="liquidGoldBase" cx="50%" cy="50%" r="70%">
+                <stop offset="0%" stop-color="#fdf4a3">
+                  <animate attributeName="stop-color" values="#fdf4a3;#f5e97e;#e6d670;#fdf4a3" dur="4s" repeatCount="indefinite"/>
+                </stop>
+                <stop offset="35%" stop-color="#f5e97e">
+                  <animate attributeName="stop-color" values="#f5e97e;#e6d670;#d4b654;#f5e97e" dur="4s" repeatCount="indefinite"/>
+                </stop>
+                <stop offset="60%" stop-color="#d4b654">
+                  <animate attributeName="stop-color" values="#d4b654;#bfa243;#f5e97e;#d4b654" dur="4s" repeatCount="indefinite"/>
+                </stop>
+                <stop offset="85%" stop-color="#bfa243">
+                  <animate attributeName="stop-color" values="#bfa243;#9a7f35;#d4b654;#bfa243" dur="4s" repeatCount="indefinite"/>
+                </stop>
+                <stop offset="100%" stop-color="#8a6f2f">
+                  <animate attributeName="stop-color" values="#8a6f2f;#7a6519;#9a7f35;#8a6f2f" dur="4s" repeatCount="indefinite"/>
+                </stop>
+              </radialGradient>
+
+              <!-- Dark gold/bronze gradient for metal parts -->
+              <radialGradient id="bronzeGrad" cx="50%" cy="40%" r="60%">
+                <stop offset="0%" stop-color="#d4b654"/>
+                <stop offset="30%" stop-color="#bfa243"/>
+                <stop offset="60%" stop-color="#9a7f35"/>
+                <stop offset="90%" stop-color="#7a6519"/>
+                <stop offset="100%" stop-color="#5a4515"/>
+              </radialGradient>
+
+              <!-- Charcoal dark for depth (matching login page dark theme) -->
+              <radialGradient id="darkCharcoalGrad" cx="50%" cy="40%" r="60%">
+                <stop offset="0%" stop-color="#2a2a2a"/>
+                <stop offset="40%" stop-color="#222222"/>
+                <stop offset="70%" stop-color="#1c1c1e"/>
+                <stop offset="100%" stop-color="#111213"/>
+              </radialGradient>
+              
+              <!-- Wood grain pattern with darker gold -->
+              <pattern id="goldWoodGrain" x="0" y="0" width="100" height="200" patternUnits="userSpaceOnUse">
+                <rect width="100" height="200" fill="url(#liquidGoldBase)"/>
+                <!-- Dark grain lines -->
+                <path d="M0,10 Q30,5 60,10 T100,10 M0,30 Q40,25 70,30 T100,30 M0,50 Q35,45 65,50 T100,50 M0,70 Q45,65 75,70 T100,70 M0,90 Q25,85 55,90 T100,90 M0,110 Q50,105 80,110 T100,110 M0,130 Q30,125 60,130 T100,130 M0,150 Q40,145 70,150 T100,150 M0,170 Q35,165 65,170 T100,170 M0,190 Q45,185 75,190 T100,190" 
+                      stroke="#6a4f1f" stroke-width="1.5" fill="none" opacity="0.6"/>
+                <!-- Wood knots -->
+                <circle cx="20" cy="40" r="8" fill="#7a5f1f" opacity="0.4"/>
+                <circle cx="80" cy="120" r="6" fill="#7a5f1f" opacity="0.4"/>
+                <ellipse cx="50" cy="80" rx="15" ry="5" fill="#6a4f1f" opacity="0.3"/>
+                <circle cx="65" cy="160" r="4" fill="#7a5f1f" opacity="0.4"/>
+                <!-- Additional grain detail -->
+                <path d="M0,20 Q20,18 40,20 T100,20 M0,60 Q25,58 50,60 T100,60 M0,100 Q30,98 60,100 T100,100 M0,140 Q35,138 70,140 T100,140 M0,180 Q40,178 80,180 T100,180" 
+                      stroke="#5a3f0f" stroke-width="0.8" fill="none" opacity="0.4"/>
+              </pattern>
+              
+              <!-- Shield gradient overlay -->
+              <radialGradient id="shieldOverlay" cx="50%" cy="40%" r="70%">
+                <stop offset="0%" stop-color="#000" stop-opacity="0"/>
+                <stop offset="70%" stop-color="#000" stop-opacity="0.15"/>
+                <stop offset="100%" stop-color="#000" stop-opacity="0.3"/>
+              </radialGradient>
+            </defs>
+            
+            <!-- Text curved along top -->
+            <path id="topTextPath" d="M 80,320 A 280,280 0 0,1 520,320" fill="none"/>
+            <text font-family="system-ui, -apple-system, sans-serif" font-size="36" font-weight="900" letter-spacing="12" fill="url(#liquidGoldBase)">
+              <textPath href="#topTextPath" startOffset="50%" text-anchor="middle">VALHALLA</textPath>
+            </text>
+            
+            <!-- Text curved along bottom -->
+            <path id="bottomTextPath" d="M 520,320 A 280,280 0 0,1 80,320" fill="none"/>
+            <text font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700" letter-spacing="6" fill="url(#liquidGoldBase)">
+              <textPath href="#bottomTextPath" startOffset="50%" text-anchor="middle">LABOR COMPLIANCE</textPath>
+            </text>
+            
+            <!-- Main shield circle -->
+            <g transform="translate(300,320)">
+              
+              <!-- Outer charcoal/gold rim -->
+              <circle r="240" fill="url(#darkCharcoalGrad)"/>
+              <circle r="235" fill="#111213"/>
+              <circle r="230" fill="url(#bronzeGrad)"/>
+              <circle r="225" fill="#1c1c1e"/>
+              
+              <!-- Liquid gold wood shield base -->
+              <circle r="220" fill="url(#liquidGoldBase)"/>
+              <circle r="220" fill="url(#goldWoodGrain)"/>
+              
+              <!-- Wood planks effect with darker gold -->
+              <g stroke="#6a4f1f" stroke-width="2.5" fill="none" opacity="0.5">
+                <line x1="-220" y1="0" x2="220" y2="0"/>
+                <line x1="-210" y1="-80" x2="210" y2="-80"/>
+                <line x1="-210" y1="80" x2="210" y2="80"/>
+                <line x1="-180" y1="-150" x2="180" y2="-150"/>
+                <line x1="-180" y1="150" x2="180" y2="150"/>
+              </g>
+              
+              <!-- Shield segments (8 sections) with darker lines -->
+              <g stroke="#5a3f0f" stroke-width="3" fill="none" opacity="0.4">
+                <line x1="0" y1="-220" x2="0" y2="220"/>
+                <line x1="-220" y1="0" x2="220" y2="0"/>
+                <line x1="-156" y1="-156" x2="156" y2="156"/>
+                <line x1="156" y1="-156" x2="-156" y2="156"/>
+              </g>
+              
+              <!-- Bronze/gold studs with charcoal backing -->
+              <g>
+                <!-- 16 studs evenly distributed -->
+                <circle cx="0" cy="-215" r="12" fill="url(#darkCharcoalGrad)"/>
+                <circle cx="0" cy="-215" r="10" fill="url(#bronzeGrad)"/>
+                
+                <circle cx="83" cy="-198" r="12" fill="url(#darkCharcoalGrad)"/>
+                <circle cx="83" cy="-198" r="10" fill="url(#bronzeGrad)"/>
+                
+                <circle cx="152" cy="-152" r="12" fill="url(#darkCharcoalGrad)"/>
+                <circle cx="152" cy="-152" r="10" fill="url(#bronzeGrad)"/>
+                
+                <circle cx="198" cy="-83" r="12" fill="url(#darkCharcoalGrad)"/>
+                <circle cx="198" cy="-83" r="10" fill="url(#bronzeGrad)"/>
+                
+                <circle cx="215" cy="0" r="12" fill="url(#darkCharcoalGrad)"/>
+                <circle cx="215" cy="0" r="10" fill="url(#bronzeGrad)"/>
+                
+                <circle cx="198" cy="83" r="12" fill="url(#darkCharcoalGrad)"/>
+                <circle cx="198" cy="83" r="10" fill="url(#bronzeGrad)"/>
+                
+                <circle cx="152" cy="152" r="12" fill="url(#darkCharcoalGrad)"/>
+                <circle cx="152" cy="152" r="10" fill="url(#bronzeGrad)"/>
+                
+                <circle cx="83" cy="198" r="12" fill="url(#darkCharcoalGrad)"/>
+                <circle cx="83" cy="198" r="10" fill="url(#bronzeGrad)"/>
+                
+                <circle cx="0" cy="215" r="12" fill="url(#darkCharcoalGrad)"/>
+                <circle cx="0" cy="215" r="10" fill="url(#bronzeGrad)"/>
+                
+                <circle cx="-83" cy="198" r="12" fill="url(#darkCharcoalGrad)"/>
+                <circle cx="-83" cy="198" r="10" fill="url(#bronzeGrad)"/>
+                
+                <circle cx="-152" cy="152" r="12" fill="url(#darkCharcoalGrad)"/>
+                <circle cx="-152" cy="152" r="10" fill="url(#bronzeGrad)"/>
+                
+                <circle cx="-198" cy="83" r="12" fill="url(#darkCharcoalGrad)"/>
+                <circle cx="-198" cy="83" r="10" fill="url(#bronzeGrad)"/>
+                
+                <circle cx="-215" cy="0" r="12" fill="url(#darkCharcoalGrad)"/>
+                <circle cx="-215" cy="0" r="10" fill="url(#bronzeGrad)"/>
+                
+                <circle cx="-198" cy="-83" r="12" fill="url(#darkCharcoalGrad)"/>
+                <circle cx="-198" cy="-83" r="10" fill="url(#bronzeGrad)"/>
+                
+                <circle cx="-152" cy="-152" r="12" fill="url(#darkCharcoalGrad)"/>
+                <circle cx="-152" cy="-152" r="10" fill="url(#bronzeGrad)"/>
+                
+                <circle cx="-83" cy="-198" r="12" fill="url(#darkCharcoalGrad)"/>
+                <circle cx="-83" cy="-198" r="10" fill="url(#bronzeGrad)"/>
+              </g>
+              
+              <!-- Center boss with charcoal and bronze -->
+              <circle r="70" fill="url(#darkCharcoalGrad)"/>
+              <circle r="65" fill="#1c1c1e"/>
+              <circle r="60" fill="url(#bronzeGrad)"/>
+              <circle r="50" fill="#111213"/>
+              <circle r="45" fill="url(#bronzeGrad)"/>
+              
+              <!-- Boss center detail with liquid gold -->
+              <circle r="22" fill="#1c1c1e"/>
+              <circle r="18" fill="url(#bronzeGrad)"/>
+              <circle r="14" fill="#262626"/>
+              <circle r="10" fill="url(#liquidGoldBase)"/>
+              
+              <!-- Gradient overlay for depth -->
+              <circle r="220" fill="url(#shieldOverlay)"/>
+            </g>
+          </svg>
+          <div class="brand-legend">
+            <div class="title logo-gold">VALHALLA LABOR COMPLIANCE</div>
+            <div class="tagline logo-gold" style="-webkit-text-fill-color:initial;color:var(--muted);background:none;">
+              ENTERPRISE CERTIFIED PAYROLL REPORTING
+            </div>
+          </div>
+        </aside>
+
+        <!-- RIGHT: Sign-in -->
+        <div class="form-col">
+          <div class="h-row">
+            <div>
+              <span class="version-badge">v1.0 • MVP Release</span>
+              <h1 id="title" class="goldtext">Welcome back</h1>
+              <p class="preamble">Sign in to your Valhalla account to access enterprise certified payroll reporting.</p>
+            </div>
+          </div>
+
+          <div class="sso" aria-label="Single sign-on">
+            <button id="sso-microsoft" aria-label="Sign in with Microsoft">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M11.4 24H0V12.6h11.4V24zM24 24H12.6V12.6H24V24zM11.4 11.4H0V0h11.4v11.4zM24 11.4H12.6V0H24v11.4z"/>
+              </svg>
+              <span>Continue with Microsoft</span>
+            </button>
+            <button id="sso-google" aria-label="Sign in with Google">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              <span>Continue with Google</span>
+            </button>
+          </div>
+
+          <hr class="sep" aria-hidden="true"/>
+
+          <!-- Main Login Form -->
+          <form id="loginForm" class="grid" novalidate>
+            <div class="field">
+              <label for="email">Work Email Address</label>
+              <input id="email" type="email" autocomplete="username" required placeholder="you@company.com" value="demo@valhalla.com"/>
+              <div class="helper">Use your company email address</div>
+            </div>
+            <div class="field">
+              <label for="password">Password</label>
+              <div class="row" style="width:100%">
+                <input id="password" type="password" autocomplete="current-password" required style="flex:1" placeholder="Enter your password" value="ValhallaDemo2024!"/>
+                <button type="button" id="togglePw" class="btn gold-surface" style="height:44px;border-radius:12px">Show</button>
+              </div>
+              <div class="helper">Minimum 8 characters required</div>
+            </div>
+            <div class="actions">
+              <label><input type="checkbox" id="remember" checked/> Keep me signed in for 30 days</label>
+              <button type="submit" class="btn gold-surface" id="loginBtn">
+                <span id="loginBtnText">Sign In</span>
+              </button>
+            </div>
+            <div class="linkrow">
+              <a class="gold-link" href="#forgot" id="forgotLink">Forgot password?</a> •
+              <a class="gold-link" href="contact.html">Contact support</a>
+            </div>
+            <div id="err" class="err" role="alert" aria-live="polite"></div>
+            <div id="successMsg" class="success-msg" role="status"></div>
+          </form>
+
+          <!-- MFA Section -->
+          <div id="mfaStep" class="mfa" aria-labelledby="mfaTitle">
+            <h2 id="mfaTitle" style="margin:8px 0 4px 0;font-size:18px;" class="goldtext">Verify your identity</h2>
+            <p class="helper">Enter the 6-digit verification code from your authenticator app or email.</p>
+            <div class="field">
+              <label for="mfaCode">Verification Code</label>
+              <input id="mfaCode" type="tel" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="••••••" class="code"/>
+            </div>
+            <div class="row" style="justify-content:space-between;margin-top:16px">
+              <button type="button" id="mfaBack" class="btn btn-outline">Back</button>
+              <button type="button" id="mfaSubmit" class="btn gold-surface">Verify & Continue</button>
+            </div>
+            <div class="timer" id="timer">Resend code in <span id="countdown">30</span>s</div>
+            <div id="mfaErr" class="err" role="alert" aria-live="polite"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+// ============================================
+// AZURE DEPLOYMENT CONFIGURATION
+// ============================================
+// TO DEPLOY: Replace these values in Azure Key Vault or App Configuration
+const AUTH_CONFIG = {
+  // Environment detection
+  getEnvironment() {
+    const hostname = window.location.hostname;
+    if (!hostname || hostname === 'localhost' || hostname === '127.0.0.1') return 'development';
+    if (hostname.includes('staging') || hostname.includes('-staging')) return 'staging';
+    if (hostname.includes('test') || hostname.includes('-test')) return 'test';
+    return 'production';
+  },
+  
+  // Get configuration based on environment
+  getConfig() {
+    const env = this.getEnvironment();
+    const configs = {
+      development: {
+        apiUrl: 'http://localhost:7071/api',
+        authEndpoint: '/auth/login',
+        useDemoAuth: true,
+        azure: { enabled: false },
+        google: { enabled: false }
+      },
+      staging: {
+        apiUrl: 'https://valhalla-staging.azurewebsites.net/api',
+        authEndpoint: '/auth/login',
+        useDemoAuth: false,
+        azure: {
+          enabled: true,
+          clientId: '{{AZURE_CLIENT_ID}}', // Replace in Azure
+          tenantId: '{{AZURE_TENANT_ID}}', // Replace in Azure
+          redirectUri: 'https://valhalla-staging.azurewebsites.net/auth/callback',
+          scopes: ['user.read', 'email', 'profile']
+        },
+        google: {
+          enabled: true,
+          clientId: '{{GOOGLE_CLIENT_ID}}', // Replace in Azure
+          redirectUri: 'https://valhalla-staging.azurewebsites.net/auth/google/callback'
+        }
+      },
+      production: {
+        apiUrl: 'https://api.valhallalab.com',
+        authEndpoint: '/auth/login',
+        useDemoAuth: false,
+        azure: {
+          enabled: true,
+          clientId: '{{AZURE_CLIENT_ID}}', // Replace in Azure
+          tenantId: '{{AZURE_TENANT_ID}}', // Replace in Azure  
+          redirectUri: 'https://app.valhallalab.com/auth/callback',
+          scopes: ['user.read', 'email', 'profile', 'offline_access']
+        },
+        google: {
+          enabled: true,
+          clientId: '{{GOOGLE_CLIENT_ID}}', // Replace in Azure
+          redirectUri: 'https://app.valhallalab.com/auth/google/callback'
+        }
+      }
+    };
+    
+    return { env, ...configs[env] || configs.development };
+  }
+};
+
+// ============================================
+// AUTHENTICATION HANDLER
+// ============================================
+class ValhallaAuth {
+  constructor() {
+    this.config = AUTH_CONFIG.getConfig();
+    this.init();
+  }
+  
+  init() {
+    // Initialize theme
+    this.initTheme();
+    
+    // Bind events
+    this.bindEvents();
+    
+    // Check for OAuth callback
+    this.handleOAuthCallback();
+    
+    // Check existing session
+    this.checkExistingSession();
+  }
+  
+  initTheme() {
+    const savedTheme = localStorage.getItem('vlc_theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  }
+  
+  bindEvents() {
+    // Theme toggle
+    document.getElementById('mode').addEventListener('click', () => {
+      const html = document.documentElement;
+      const next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('vlc_theme', next);
+    });
+    
+    // Password toggle
+    document.getElementById('togglePw').addEventListener('click', () => {
+      const pw = document.getElementById('password');
+      pw.type = pw.type === 'password' ? 'text' : 'password';
+      this.textContent = pw.type === 'password' ? 'Show' : 'Hide';
+    });
+    
+    // Form submission
+    document.getElementById('loginForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      this.handleLogin();
+    });
+    
+    // SSO buttons
+    document.getElementById('sso-microsoft').addEventListener('click', () => {
+      this.handleSSOLogin('microsoft');
+    });
+    
+    document.getElementById('sso-google').addEventListener('click', () => {
+      this.handleSSOLogin('google');
+    });
+    
+    // MFA
+    document.getElementById('mfaSubmit').addEventListener('click', () => {
+      this.handleMFA();
+    });
+    
+    document.getElementById('mfaBack').addEventListener('click', () => {
+      this.showLoginForm();
+    });
+  }
+  
+  async handleLogin() {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    
+    // Clear previous errors
+    document.getElementById('err').textContent = '';
+    
+    // Show loading state
+    const btn = document.getElementById('loginBtn');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<span class="loading-spinner"></span> Signing in...';
+    btn.disabled = true;
+    
+    try {
+      if (this.config.useDemoAuth) {
+        // Demo mode
+        if (email === 'demo@valhalla.com' && password === 'ValhallaDemo2024!') {
+          this.showMFAForm();
+        } else {
+          document.getElementById('err').textContent = 'Invalid credentials. Use demo@valhalla.com / ValhallaDemo2024!';
+        }
+      } else {
+        // Production API call
+        const response = await fetch(this.config.apiUrl + this.config.authEndpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.requiresMfa) {
+          this.tempAuthToken = data.tempToken;
+          this.showMFAForm();
+        } else if (response.ok) {
+          this.completeLogin(data);
+        } else {
+          document.getElementById('err').textContent = data.error || 'Invalid credentials';
+        }
+      }
+    } catch (error) {
+      document.getElementById('err').textContent = 'Connection error. Please try again.';
+    } finally {
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+    }
+  }
+  
+  async handleSSOLogin(provider) {
+    if (provider === 'microsoft' && this.config.azure?.enabled) {
+      const authUrl = `https://login.microsoftonline.com/${this.config.azure.tenantId}/oauth2/v2.0/authorize?` +
+        `client_id=${this.config.azure.clientId}` +
+        `&response_type=code` +
+        `&redirect_uri=${encodeURIComponent(this.config.azure.redirectUri)}` +
+        `&response_mode=query` +
+        `&scope=${encodeURIComponent(this.config.azure.scopes.join(' '))}` +
+        `&state=${this.generateState()}`;
+      
+      window.location.href = authUrl;
+    } else if (provider === 'google' && this.config.google?.enabled) {
+      const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
+        `client_id=${this.config.google.clientId}` +
+        `&redirect_uri=${encodeURIComponent(this.config.google.redirectUri)}` +
+        `&response_type=code` +
+        `&scope=${encodeURIComponent('email profile')}` +
+        `&state=${this.generateState()}`;
+      
+      window.location.href = authUrl;
+    } else {
+      // Development mode message
+      alert(`${provider} authentication will be enabled in ${this.config.env === 'development' ? 'production' : 'this environment'}. For testing, use the demo credentials.`);
+    }
+  }
+  
+  generateState() {
+    // Generate random state for OAuth security
+    const array = new Uint8Array(16);
+    crypto.getRandomValues(array);
+    const state = btoa(String.fromCharCode.apply(null, array));
+    sessionStorage.setItem('oauth_state', state);
+    return state;
+  }
+  
+  async handleOAuthCallback() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    const state = urlParams.get('state');
+    
+    if (code && state) {
+      const savedState = sessionStorage.getItem('oauth_state');
+      
+      if (state === savedState) {
+        // Exchange code for token (would be backend call in production)
+        try {
+          const response = await fetch(this.config.apiUrl + '/auth/oauth/callback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code, state })
+          });
+          
+          const data = await response.json();
+          
+          if (response.ok) {
+            this.completeLogin(data);
+          } else {
+            document.getElementById('err').textContent = 'Authentication failed. Please try again.';
+          }
+        } catch (error) {
+          document.getElementById('err').textContent = 'Connection error during authentication.';
+        }
+      } else {
+        document.getElementById('err').textContent = 'Invalid authentication state. Please try again.';
+      }
+      
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+      sessionStorage.removeItem('oauth_state');
+    }
+  }
+  
+  showMFAForm() {
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('mfaStep').classList.add('active');
+    document.getElementById('mfaCode').focus();
+    
+    // Start countdown
+    let countdown = 30;
+    const timer = setInterval(() => {
+      countdown--;
+      document.getElementById('countdown').textContent = countdown;
+      if (countdown <= 0) {
+        clearInterval(timer);
+        document.getElementById('timer').innerHTML = '<a href="#" onclick="resendMFA()">Resend code</a>';
+      }
+    }, 1000);
+  }
+  
+  showLoginForm() {
+    document.getElementById('mfaStep').classList.remove('active');
+    document.getElementById('loginForm').style.display = 'grid';
+  }
+  
+  async handleMFA() {
+    const code = document.getElementById('mfaCode').value;
+    
+    if (this.config.useDemoAuth) {
+      // Demo mode
+      if (code === '123456') {
+        this.completeLogin({ 
+          email: 'demo@valhalla.com',
+          token: 'demo_token',
+          expiresIn: 3600 
+        });
+      } else {
+        document.getElementById('mfaErr').textContent = 'Invalid code. Use: 123456';
+      }
+    } else {
+      // Production API call
+      try {
+        const response = await fetch(this.config.apiUrl + '/auth/mfa/verify', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.tempAuthToken}`
+          },
+          body: JSON.stringify({ code })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          this.completeLogin(data);
+        } else {
+          document.getElementById('mfaErr').textContent = data.error || 'Invalid code';
+        }
+      } catch (error) {
+        document.getElementById('mfaErr').textContent = 'Verification failed. Please try again.';
+      }
+    }
+  }
+  
+  completeLogin(data) {
+    // Store session
+    const session = {
+      email: data.email,
+      token: data.token,
+      loginTime: new Date().toISOString(),
+      expiresAt: new Date(Date.now() + (data.expiresIn * 1000)).toISOString()
+    };
+    
+    localStorage.setItem('vlc_auth', 'true');
+    localStorage.setItem('vlc_session', JSON.stringify(session));
+    
+    // Store token for API calls (in production, use httpOnly cookie)
+    if (!this.config.useDemoAuth) {
+      sessionStorage.setItem('vlc_token', data.token);
+    }
+    
+    // Redirect to dashboard
+    window.location.href = 'dashboard.html';
+  }
+  
+  checkExistingSession() {
+    const session = localStorage.getItem('vlc_session');
+    
+    if (session) {
+      try {
+        const data = JSON.parse(session);
+        const expiresAt = new Date(data.expiresAt);
+        
+        if (expiresAt > new Date()) {
+          // Session still valid, redirect to dashboard
+          window.location.href = 'dashboard.html';
+        } else {
+          // Session expired, clear it
+          localStorage.removeItem('vlc_auth');
+          localStorage.removeItem('vlc_session');
+          sessionStorage.removeItem('vlc_token');
+        }
+      } catch (error) {
+        // Invalid session data, clear it
+        localStorage.removeItem('vlc_auth');
+        localStorage.removeItem('vlc_session');
+        sessionStorage.removeItem('vlc_token');
+      }
+    }
+  }
+}
+
+// Initialize authentication
+document.addEventListener('DOMContentLoaded', () => {
+  new ValhallaAuth();
+});
+
+// ============================================
+// AZURE DEPLOYMENT CHECKLIST
+// ============================================
+/*
+TO DEPLOY TO AZURE:
+
+1. Azure AD App Registration:
+   - Register app at https://portal.azure.com
+   - Set redirect URIs for each environment
+   - Generate client secret
+   - Note the Application (client) ID and Directory (tenant) ID
+
+2. Google OAuth (if using):
+   - Create project at https://console.cloud.google.com
+   - Enable Google+ API
+   - Create OAuth 2.0 credentials
+   - Add authorized redirect URIs
+
+3. Azure Key Vault Setup:
+   - Store: AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_CLIENT_SECRET
+   - Store: GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
+   - Store: API_KEYS, JWT_SECRET
+
+4. Azure App Service Configuration:
+   - Set application settings from Key Vault
+   - Configure CORS for your domains
+   - Enable HTTPS only
+   - Set up custom domain and SSL
+
+5. Backend API Requirements:
+   - POST /api/auth/login - Standard login
+   - POST /api/auth/mfa/verify - MFA verification  
+   - POST /api/auth/oauth/callback - OAuth token exchange
+   - GET /api/auth/refresh - Token refresh
+   - POST /api/auth/logout - Session termination
+
+6. Replace placeholder values:
+   - {{AZURE_CLIENT_ID}} - Your Azure AD app ID
+   - {{AZURE_TENANT_ID}} - Your Azure AD tenant ID
+   - {{GOOGLE_CLIENT_ID}} - Your Google OAuth client ID
+   
+7. Security Headers (configure in Azure):
+   - Content-Security-Policy
+   - X-Frame-Options: DENY
+   - X-Content-Type-Options: nosniff
+   - Strict-Transport-Security
+*/
+</script>
+
+</body>
+</html>
